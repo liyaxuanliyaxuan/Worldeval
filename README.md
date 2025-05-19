@@ -73,7 +73,7 @@ Wan-Video supports multiple Attention implementations. If you have installed any
 
 ## Train
 
-Step 1: Organize your dataset
+### Step 1: Organize your dataset
 
 You need to organize the HDF5 files containing the robot trajectory data as follows:
 
@@ -90,7 +90,7 @@ file_path,file_name,text
 /path/to/episode_0.hdf5,episode_0.hdf5,""
 ```
 
-Step 2: Data process
+### Step 2: Data process
 
 run `scripts/data_process.sh`
 
@@ -121,7 +121,7 @@ data/example_dataset/
     └── file2.hdf5.tensors.pth
 ```
 
-Step 4: Train
+### Step 3: Run lora training script
 
 Run  `scripts/train.bash`: 
 
@@ -148,7 +148,7 @@ please separate the safetensor files with a comma. For example: `models/Wan-AI/W
 
 ## Inference
 
-Step1: 
+### Step1: Extract action embeddings
 
 Extract action embeddings using different VLA policies, prepare the encoded actions, and save them in a .pt file with the following structure:
 
@@ -159,11 +159,11 @@ Extract action embeddings using different VLA policies, prepare the encoded acti
 }
 ```
 
-Step2: 
+### Step2: Sample frames
 
 Use `utils/sample_frames_from_dir_for_test` to extract sample frames from the HDF5 file for testing; this will generate a `metadata.json` file and save the first frame for use in generation.
 
-Step3: 
+### Step3: Run inference script
 
 Run `scripts/inference.bash`
 
