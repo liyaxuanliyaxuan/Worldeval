@@ -8,11 +8,11 @@ WorldEval: World Model as Real-World Robot Policies Evaluator</h1>
   [![arXiv](https://img.shields.io/badge/Arxiv-2402.03766-b31b1b.svg?logo=arXiv)](https://arxiv.org/abs/)
   
 <p align="center">
-  <img src="assets/overview.png" width="400"/> &nbsp;
+  <img src="assets/overview.png" width="500"/> &nbsp;
 </p>
 
 <p align="center">
-<img src="assets/pipeline.png" width="400"/>
+<img src="assets/pipeline.png" width="500"/>
 </p>
 
 ## 📰 News
@@ -180,8 +180,8 @@ CUDA_VISIBLE_DEVICES="0,1,2,3,4,5,6,7" python infer.py \
 
 ## Acknowledgement
 We build our project based on:
-- [WAN2.1](https://github.com/Wan-Video/Wan2.1):a comprehensive and open suite of video foundation models that pushes the boundaries of video generation
-- [DiffSynth Studio](https://github.com/modelscope/DiffSynth-Studio):an open-source project aimed at exploring innovations in AIGC technology
+- [WAN2.1](https://github.com/Wan-Video/Wan2.1): a comprehensive and open suite of video foundation models that pushes the boundaries of video generation
+- [DiffSynth Studio](https://github.com/modelscope/DiffSynth-Studio): an open-source project aimed at exploring innovations in AIGC technology
 
 <!-- ## Citation
 

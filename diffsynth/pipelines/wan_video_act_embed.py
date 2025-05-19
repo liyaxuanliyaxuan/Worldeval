@@ -357,9 +357,9 @@ def model_fn_wan_video(
 
     # print(action.shape)
     action = action.unsqueeze(0)  
-    action = action.float().mean(dim=1)    # 聚合时间步
+    action = action.float().mean(dim=1)    
     action = action.to(dtype=dit.action_proj[0].weight.dtype)
-    action_emb = dit.action_proj(action)  # 投影到dim → (1, 512)
+    action_emb = dit.action_proj(action)  # dim → (1, 512)
     action_emb = action_emb.unsqueeze(1)  
     enhanced_ctx = original_ctx + action_emb * dit.action_alpha
     

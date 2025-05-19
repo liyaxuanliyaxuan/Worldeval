@@ -277,7 +277,7 @@ class WanModel(torch.nn.Module):
             nn.SiLU(),
             nn.Linear(dim, dim)
         )
-        # 新增Action Embedding
+        # Action Embedding
         if action_dim < 500:
             self.action_proj = nn.Sequential(
                 nn.Linear(action_dim, 1280, bias=True),
@@ -336,19 +336,14 @@ class WanModel(torch.nn.Module):
         t_mod = self.time_projection(t).unflatten(1, (6, self.dim))
         with torch.no_grad():
             original_ctx = self.text_embedding(context)
-        # print("Original Context Stats:")
-        # print("  Mean:", original_ctx.mean().item(), " Std:", original_ctx.std().item(), " Min:", original_ctx.min().item(), " Max:", original_ctx.max().item())
-        
-        # 修改action处理部分
+
         b, _, l, d = action.shape  
         action = action.view(b, l, d)  
-        action = action.float().mean(dim=1)    # 聚合时间步 → (1, action_dim)
+        action = action.float().mean(dim=1)    #  → (1, action_dim)
         action = action.to(dtype=self.action_proj[0].weight.dtype)
-        action_emb = self.action_proj(action)  # 投影到dim → (1, 512)
+        action_emb = self.action_proj(action)  # dim → (1, 512)
         action_emb = action_emb.unsqueeze(1)  # → (1, 1, 512)
 
-        
-        # context = self.text_embedding(context)
         enhanced_ctx = original_ctx + action_emb * self.action_alpha
         # print("Action Embedding Stats (Before Scaling):")
         # print("  Mean:", action_emb.mean().item(), " Std:", action_emb.std().item(), " Min:", action_emb.min().item(), " Max:", action_emb.max().item())
@@ -361,11 +356,8 @@ class WanModel(torch.nn.Module):
             x = torch.cat([x, y], dim=1)  # (b, c_x + c_y, f, h, w)
             # print("Concatenated Input Shape:", x.shape)
             
-            clip_embdding = self.img_emb(clip_feature)
-            # print("Clip Embedding Shape:", clip_embdding.shape)
-            
+            clip_embdding = self.img_emb(clip_feature)         
             context = torch.cat([clip_embdding, enhanced_ctx], dim=1)
-            # print("Final Context Shape:", context.shape)
         
         x, (f, h, w) = self.patchify(x)
         

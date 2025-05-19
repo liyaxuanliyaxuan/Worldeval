@@ -58,12 +58,11 @@ from .utils import load_state_dict, init_weights_on_device, hash_state_dict_keys
 def initialize_action_proj(model, action_alpha=0.1):
     for name, module in model.named_modules():
         if "action_proj" in name and isinstance(module, nn.Linear):
-            # Use PyTorch's default initialization
             module.reset_parameters()
             print(f"Initialized {name} parameters")
     # Initialize action_alpha if it exists and is an nn.Parameter
     if hasattr(model, 'action_alpha') and isinstance(model.action_alpha, nn.Parameter):
-        torch.nn.init.constant_(model.action_alpha, action_alpha)  # Example: initialize to 0.1
+        torch.nn.init.constant_(model.action_alpha, action_alpha) 
         print("Initialized action_alpha parameter")
 
 def load_model_from_single_file(state_dict, model_names, model_classes, model_resource, torch_dtype, device, custom_params):

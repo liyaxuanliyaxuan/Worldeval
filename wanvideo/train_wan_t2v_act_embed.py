@@ -117,15 +117,9 @@ class TextVideoDataset(torch.utils.data.Dataset):
             
     def load_act_embed(self, file_path, start_index, end_index):
         if self.action_encoded_path is not None:
-            # 从.pt文件加载编码后的动作数据
             data = torch.load(self.action_encoded_path, weights_only=False)
             file_index = data['file_path'].index(file_path)
-
-            if 'encoded_action' in data:
-                action_data = data['encoded_action'][file_index]
-            else:
-                # TODO： del
-                action_data = data['action_embed'][file_index]    
+            action_data = data['encoded_action'][file_index]   
             action_data = action_data[start_index: end_index + 1: self.frame_interval]
             if not isinstance(action_data, np.ndarray):
                 action_data = action_data.numpy()
@@ -146,12 +140,12 @@ class TextVideoDataset(torch.utils.data.Dataset):
                 if all(text == "" for text in texts):
                     text = f['language_raw'][0]
                     text = text.decode('utf-8').strip()
-                    return [text]  # Wrap the text in a list
+                    return [text] 
                 unique_texts = set(texts)
                 if len(unique_texts) == 1:
-                    return [texts[0]]  # Wrap the single text in a list
+                    return [texts[0]] 
                 else:
-                    return [" ".join(texts)]  # Wrap the concatenated texts in a list
+                    return [" ".join(texts)]  
             # Fallback to 'language_raw' if 'substep_reasonings' doesn't exist
             text = f['language_raw'][0]
             text = text.decode('utf-8').strip()

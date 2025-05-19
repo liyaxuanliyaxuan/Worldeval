@@ -209,7 +209,6 @@ class LightningModelForDataProcess(pl.LightningModule):
         self.tiler_kwargs = {"tiled": tiled, "tile_size": tile_size, "tile_stride": tile_stride}
         
     def test_step(self, batch, batch_idx):
-        #  TODO: 此处为何 video 不取 batch["video"][0] 而是取 batch["video"]
         text, video, path = batch["text"][0], batch["video"], batch["path"][0]
         
         self.pipe.device = self.device
@@ -233,7 +232,6 @@ class LightningModelForDataProcess(pl.LightningModule):
 
 class TensorDataset(torch.utils.data.Dataset):
     def __init__(self, base_path, metadata_path, steps_per_epoch):
-        # metadata = pd.read_csv(metadata_path)
         # Directly read all .tensors.pth files from the train directory
         self.path = [os.path.join(base_path, "train", file_name) for file_name in os.listdir(os.path.join(base_path, "train")) if file_name.endswith(".tensors.pth")]
         print(len(self.path), "tensors cached in metadata.")
@@ -251,7 +249,6 @@ class TensorDataset(torch.utils.data.Dataset):
     
 
     def __len__(self):
-        # TODO: check if this is correct
         return self.steps_per_epoch
 
 
