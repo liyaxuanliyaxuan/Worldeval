@@ -15,9 +15,9 @@ def get_text_from_hdf5(f, frame_id):
         elif 'language_raw' in f:
             text = f['language_raw'][0].decode('utf-8').strip()
         else:
-            text = "Clean the table."
+            text = "Clean table."
     except:
-        text = "Clean the table."
+        text = "Clean table."
     return text
 
 def process_hdf5_files(input_dir, output_dir):
@@ -92,6 +92,3 @@ if __name__ == "__main__":
     args = parser.parse_args()
     
     process_hdf5_files(args.input, args.output)
-
-    # Example usage:
-    # python sample_frames_simple.py --input /home/jz08/lyx/hdf5/new_pick_and_place_source/lyx_brown_mug --output ./data/output_frames 

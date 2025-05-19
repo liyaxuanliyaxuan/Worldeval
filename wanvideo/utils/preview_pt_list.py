@@ -5,63 +5,63 @@ import numpy
 
 
 def preview_pt_file(pt_path, max_items=10):
-    """预览PT文件中保存的列表数据
+    """Preview list data saved in PT file
     
     Args:
-        pt_path: PT文件路径
-        max_items: 最多显示的列表项数量，默认10项
+        pt_path: Path to PT file
+        max_items: Maximum number of list items to display, default 10 items
     """
-    # 检查文件是否存在
+    # Check if file exists
     if not Path(pt_path).exists():
-        print(f"错误: 文件 {pt_path} 不存在")
+        print(f"Error: File {pt_path} does not exist")
         return
 
     try:
-        # 加载PT文件
+        # Load PT file
         data = torch.load(pt_path, weights_only=False)
         
-        # 确保加载的数据是列表或字典类型
+        # Ensure loaded data is list or dictionary type
         if not isinstance(data, (list, dict)):
-            print(f"警告: 加载的数据不是列表或字典类型，而是 {type(data)}")
+            print(f"Warning: Loaded data is not a list or dictionary type, but {type(data)}")
             return
             
-        # 获取列表或字典总长度
+        # Get total length of list or dictionary
         total_length = len(data)
-        print(f"\n文件: {pt_path}")
-        print(f"列表/字典总长度: {total_length}")
+        print(f"\nFile: {pt_path}")
+        print(f"List/Dictionary total length: {total_length}")
         
-        # 显示前几项内容
-        print(f"\n前 {min(max_items, total_length)} 项内容:")
+        # Display first few items
+        print(f"\nFirst {min(max_items, total_length)} items:")
         if isinstance(data, list):
             for i, item in enumerate(data[:max_items]):
-                print(f"\n[{i}] 类型: {type(item)}")
+                print(f"\n[{i}] Type: {type(item)}")
                 if isinstance(item, (torch.Tensor, list, tuple, dict)):
-                    print(f"形状/长度: {len(item) if isinstance(item, (list, tuple, dict)) else item.shape}")
-                print(f"内容: {item}")
+                    print(f"Shape/Length: {len(item) if isinstance(item, (list, tuple, dict)) else item.shape}")
+                print(f"Content: {item}")
         elif isinstance(data, dict):
             for i, (key, value) in enumerate(data.items()):
                 if i >= max_items:
                     break
-                print(f"\n键: {key} 类型: {type(value)}")
+                print(f"\nKey: {key} Type: {type(value)}")
                 if isinstance(value, (torch.Tensor, list, tuple, dict)):
-                    print(f"形状/长度: {len(value) if isinstance(value, (list, tuple, dict)) else value.shape}")
+                    print(f"Shape/Length: {len(value) if isinstance(value, (list, tuple, dict)) else value.shape}")
                 # if key == 'encoded_action':              
                 #     if isinstance(value, list):
-                #         print(f"encoded_action[0] 形状: {value[0].shape if isinstance(value[0], (torch.Tensor, numpy.ndarray)) else 'N/A'}")
+                #         print(f"encoded_action[0] Shape: {value[0].shape if isinstance(value[0], (torch.Tensor, numpy.ndarray)) else 'N/A'}")
                 #     else:
-                #         print(f"encoded_action 形状: {value.shape if isinstance(value, (torch.Tensor, numpy.ndarray)) else 'N/A'}")
+                #         print(f"encoded_action Shape: {value.shape if isinstance(value, (torch.Tensor, numpy.ndarray)) else 'N/A'}")
                 if isinstance(value, list) and len(value) > 0:
-                    print(f"第一个项: {value[0]}")
-                    print(f"第一个项形状: {value[0].shape if isinstance(value[0], (torch.Tensor, numpy.ndarray)) else 'N/A'}")
-                # print(f"内容: {value}")
+                    print(f"First item: {value[0]}")
+                    print(f"First item shape: {value[0].shape if isinstance(value[0], (torch.Tensor, numpy.ndarray)) else 'N/A'}")
+                # print(f"Content: {value}")
             
     except Exception as e:
-        print(f"错误: 预览文件时发生异常: {str(e)}")
+        print(f"Error: Exception occurred while previewing file: {str(e)}")
 
 def main():
-    parser = argparse.ArgumentParser(description='预览PT文件中保存的列表数据')
-    parser.add_argument('pt_path', type=str, help='PT文件路径')
-    parser.add_argument('--max-items', type=int, default=2, help='最多显示的列表项数量')
+    parser = argparse.ArgumentParser(description='Preview list data saved in PT file')
+    parser.add_argument('pt_path', type=str, help='Path to PT file')
+    parser.add_argument('--max-items', type=int, default=2, help='Maximum number of list items to display')
     
     args = parser.parse_args()
     preview_pt_file(args.pt_path, args.max_items)

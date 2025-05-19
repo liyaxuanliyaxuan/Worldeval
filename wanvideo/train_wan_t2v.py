@@ -14,7 +14,6 @@ import h5py
 class TextVideoDataset(torch.utils.data.Dataset):
     def __init__(self, base_path, metadata_path, max_num_frames=81, frame_interval=1, num_frames=81, height=480, width=832, is_i2v=False, samples_per_file=3):
         metadata = pd.read_csv(metadata_path)
-        # Check if 'file_path' exists in metadata
         if 'file_path' in metadata.columns:
             self.path = metadata['file_path'].to_list()
         else:

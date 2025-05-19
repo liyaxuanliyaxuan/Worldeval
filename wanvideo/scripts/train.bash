@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # 
-# 如果训练的是 不加入 action 的模型，需要手动改 model_config.py
+# If training a model without action, you need to manually modify model_config.py
 # dexvla: action_dim 1280
 # pi0: action_dim 1024
 # onehot: action_dim 224 

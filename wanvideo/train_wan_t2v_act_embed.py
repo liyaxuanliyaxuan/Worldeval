@@ -242,8 +242,6 @@ class LightningModelForDataProcess(pl.LightningModule):
             model_path.append(image_encoder_path)
         model_manager = ModelManager(torch_dtype=torch.bfloat16, device="cpu", custom_params={"action_alpha": action_alpha, "action_dim": action_dim})
         model_manager.load_models(model_path)
-
-        # TODO：check
         self.pipe = WanVideoPipelineActEmbed.from_model_manager(model_manager)
 
         self.tiler_kwargs = {"tiled": tiled, "tile_size": tile_size, "tile_stride": tile_stride}
@@ -272,8 +270,7 @@ class LightningModelForDataProcess(pl.LightningModule):
 
 class TensorDataset(torch.utils.data.Dataset):
     def __init__(self, base_path, metadata_path, steps_per_epoch):
-        # metadata = pd.read_csv(metadata_path)
-        # !!!!!! Directly read all .tensors.pth files from the train directory
+        # read all .tensors.pth files from the train directory
         self.path = [os.path.join(base_path, "train", file_name) for file_name in os.listdir(os.path.join(base_path, "train")) if file_name.endswith(".tensors.pth")]
         print(len(self.path), "tensors cached in metadata.")
         assert len(self.path) > 0
@@ -337,7 +334,6 @@ class LightningModelForTrain(pl.LightningModule):
                 init_lora_weights=init_lora_weights,
                 pretrained_lora_path=pretrained_lora_path,
             )
-            # 显式解冻新增模块参数
             for layer in self.pipe.denoising_model().action_proj:
                 if isinstance(layer, nn.Linear):
                     layer.weight.requires_grad = True

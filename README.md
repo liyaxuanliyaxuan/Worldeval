@@ -1,15 +1,59 @@
 
+<h1 align="center">
+WorldEval: World Model as Real-World Robot Policies Evaluator</h1>
 
 
-## Setup
+* **World Model as Real-World Robot Policies Evaluator** <br>
+  [![arXiv](https://img.shields.io/badge/Arxiv-2402.03766-b31b1b.svg?logo=arXiv)](https://arxiv.org/abs/)
+  
 
+
+## 📰 News
+* **`May. 19th, 2025`**: Our code is released!
+* **`May. 19th, 2025`**: **Worldeval** is out! **Paper** can be found [here](https://arxiv.org/abs/2409.12514). The **project web** can be found [here](https://worldeval.github.io/).
+
+
+## Data Preparation
+Our robot trajectory data format is the same as [act](https://github.com/MarkFzp/act-plus-plus), so you need to transfer your data into h5py format.
+```angular2html
+# h5 data structure
+root
+  |-action (100,14)
+  |-language_raw (1,)
+  |-observations
+      |-images # multi-view
+          |-cam_left_wrist (100,480,640,3)
+          |-cam_right_wrist (100,480,640,3)
+          |-cam_high (100,480,640,3)
+      |-joint_positions (100,14)
+      |-qpos (100,14)
+      |-qvel (100,14)
+```
+## Download Pretrained VLA Policy
+The weights of vla policy used in our paper are listed as following: 
+
+| Model               | Link                                                           |
+|---------------------|----------------------------------------------------------------|
+| Pi0 | [huggingface](https://huggingface.co/kuromivv/pi0) |
+| DexVLA | [huggingface](https://huggingface.co/kuromivv/DexVLA) |
+| Diffusion Policy | [huggingface](https://huggingface.co/kuromivv/diffusion_policy) |
+
+
+## Download WAN2.1 Weights
 Wan-Video is a collection of video synthesis models open-sourced by Alibaba.
+|Developer|Name|Link|Scripts|
+|-|-|-|-|
+|Wan Team|14B image-to-video 480P|[Link](https://modelscope.cn/models/Wan-AI/Wan2.1-I2V-14B-480P)|[wan_14b_image_to_video.py](./wan_14b_image_to_video.py)|
+|Wan Team|14B image-to-video 720P|[Link](https://modelscope.cn/models/Wan-AI/Wan2.1-I2V-14B-720P)|[wan_14b_image_to_video.py](./wan_14b_image_to_video.py)|
 
-Before using this model, please install DiffSynth-Studio from **source code**.
+
+## Install
+
+please install Worldeval from **source code**.
 
 ```shell
-git clone https://github.com/modelscope/DiffSynth-Studio.git
-cd DiffSynth-Studio
+git clone https://github.com/worldeval/Worldeval.git
+cd Worldeval
 pip install -e .
 ```
 
@@ -22,32 +66,26 @@ Wan-Video supports multiple Attention implementations. If you have installed any
 
 ## Train
 
-Step 1: Install additional packages
+Step 1: Organize your dataset
 
-```
-pip install peft lightning pandas
-```
-
-Step 2: Prepare your dataset
-
-You need to manage the training videos as follows:
+You need to organize the HDF5 files containing the robot trajectory data as follows:
 
 ```
 data/example_dataset/
 ├── metadata.csv
-└── train (empty dir)
+└── train (empty dir to store processed tensor)
 ```
 
 `metadata.csv`:
 
 ```
 file_path,file_name,text
-/home/jovyan/tzb/h5py_data/aloha_bimanual/aloha_4views/1_24_7z_extract/truncate_push_basket_to_left_1_24/episode_4.hdf5,episode_4.hdf5,""
+/path/to/episode_0.hdf5,episode_0.hdf5,""
 ```
 
-Step 3: Data process
+Step 2: Data process
 
-run scripts/data_process.sh
+run `scripts/data_process.sh`
 
 ```shell
 #! /bin/bash
@@ -80,7 +118,7 @@ Step 4: Train
 
 LoRA training:
 
-run scripts/train.bash
+run  `scripts/train.bash`
 
  ```shell
 CUDA_VISIBLE_DEVICES="0,1,2,3,4,5,6,7" \
@@ -107,18 +145,25 @@ please separate the safetensor files with a comma. For example: `models/Wan-AI/W
 
 Step1: 
 
-Extract action embeddings in different vla policy and prepare encoded actions and save them in the pt file. 
+Extract action embeddings using different VLA policies, prepare the encoded actions, and save them in a .pt file with the following structure:
+
+```
+{
+  "file_path": ["path/to/file1.hdf5", "path/to/file2.hdf5"],
+  "encoded_action": [latent_action_vector1, latent_action_vector2]
+}
+```
 
 Step2: 
 
-Sample frames from hdf5 file to test using utils/sample_frames_from_dir_for_test, then it will generate metadata.json and the first frame for use.
+Use `utils/sample_frames_from_dir_for_test` to extract sample frames from the HDF5 file for testing; this will generate a `metadata.json` file and save the first frame for use in generation.
 
 Step3: 
 
-Run scripts/muti_inference.bash
+Run `scripts/inference.bash`
 
 ```bash
-CUDA_VISIBLE_DEVICES="0,1,2,3,4,5,6,7" python muti_gpu_infer.py \
+CUDA_VISIBLE_DEVICES="0,1,2,3,4,5,6,7" python infer.py \
 --lora_path "" \
 --meta_path "" \
 --output_subdir "lora_act_alpha_0.3_dex_ep30" \
@@ -127,3 +172,21 @@ CUDA_VISIBLE_DEVICES="0,1,2,3,4,5,6,7" python muti_gpu_infer.py \
 --action_dim   1280 \
 --action_encoded_path ""
 ```
+
+## Acknowledgement
+We build our project based on:
+- [WAN2.1](https://github.com/Wan-Video/Wan2.1):a comprehensive and open suite of video foundation models that pushes the boundaries of video generation
+- [DiffSynth Studio](https://github.com/modelscope/DiffSynth-Studio):an open-source project aimed at exploring innovations in AIGC technology
+
+<!-- ## Citation
+
+If you find Worldeval useful for your research and applications, please cite using this BibTeX:
+```bibtex
+@misc{
+    @inproceedings{wen2024tinyvla,
+    title={Tinyvla: Towards fast, data-efficient vision-language-action models for robotic manipulation},
+    author={Wen, Junjie and Zhu, Yichen and Li, Jinming and Zhu, Minjie and Wu, Kun and Xu, Zhiyuan and Liu, Ning and Cheng, Ran and Shen, Chaomin and Peng, Yaxin and others},
+    booktitle={IEEE Robotics and Automation Letters (RA-L)},
+    year={2025}
+}
+``` -->

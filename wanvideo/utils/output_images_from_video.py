@@ -3,13 +3,13 @@ import os
 import argparse
 
 def extract_frames(video_path, output_dir, interval=1, prefix='frame_', format='jpg'):
-    # 创建输出目录
+    # Create output directory
     os.makedirs(output_dir, exist_ok=True)
     
-    # 打开视频文件
+    # Open video file
     cap = cv2.VideoCapture(video_path)
     if not cap.isOpened():
-        raise ValueError("无法打开视频文件")
+        raise ValueError("Cannot open video file")
     
     frame_count = 0
     saved_count = 0
@@ -17,36 +17,36 @@ def extract_frames(video_path, output_dir, interval=1, prefix='frame_', format='
     while True:
         ret, frame = cap.read()
         
-        # 如果没有读取到帧则退出循环
+        # Exit loop if no frame is read
         if not ret:
             break
         
-        # 按间隔保存帧
+        # Save frames at specified interval
         if frame_count % interval == 0:
-            # 生成文件名
+            # Generate filename
             filename = f"{prefix}{saved_count:04d}.{format}"
             output_path = os.path.join(output_dir, filename)
             
-            # 保存帧
+            # Save frame
             cv2.imwrite(output_path, frame)
             saved_count += 1
         
         frame_count += 1
     
-    # 释放资源
+    # Release resources
     cap.release()
-    print(f"成功保存 {saved_count} 帧到 {output_dir}")
+    print(f"Successfully saved {saved_count} frames to {output_dir}")
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='从视频中提取帧')
-    parser.add_argument('--input', required=True, help='输入视频文件路径')
-    parser.add_argument('--output', required=True, help='输出目录路径')
+    parser = argparse.ArgumentParser(description='Extract frames from video')
+    parser.add_argument('--input', required=True, help='Input video file path')
+    parser.add_argument('--output', required=True, help='Output directory path')
     parser.add_argument('--interval', type=int, default=1, 
-                       help='帧间隔（每N帧保存一帧，默认1）')
+                       help='Frame interval (save every N frames, default: 1)')
     parser.add_argument('--prefix', default='frame_', 
-                       help='文件名前缀（默认：frame_）')
+                       help='Filename prefix (default: frame_)')
     parser.add_argument('--format', default='jpg', 
-                       help='图片格式（默认jpg，可选png等）')
+                       help='Image format (default: jpg, options: png, etc.)')
     
     args = parser.parse_args()
     

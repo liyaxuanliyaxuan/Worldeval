@@ -7,43 +7,43 @@ import imageio
 
 def create_video_from_hdf5(hdf5_file_path, output_folder, fps=15):
     """
-    从HDF5文件创建视频
+    Create videos from HDF5 file
     Args:
-        hdf5_file_path: HDF5文件路径
-        output_folder: 输出文件夹路径
-        fps: 视频帧率
+        hdf5_file_path: Path to HDF5 file
+        output_folder: Path to output folder
+        fps: Video frame rate
     """
-    # 创建输出文件夹
+    # Create output folder
     os.makedirs(output_folder, exist_ok=True)
     
-    # 生成输出视频文件路径
+    # Generate output video file paths
     video_name_first = os.path.basename(hdf5_file_path).replace('.hdf5', '_frame_0.mp4')
     video_path_first = os.path.join(output_folder, video_name_first)
     video_name_last = os.path.basename(hdf5_file_path).replace('.hdf5', '_frame_100.mp4')
     video_path_last = os.path.join(output_folder, video_name_last)
     
     with h5py.File(hdf5_file_path, 'r') as hdf5_file:
-        # 获取图像数据
+        # Get image data
         images = hdf5_file['observations/images/cam_high']
 
-        # 打印图像数据
+        # Print image data shape
         print(images.shape)
         
-        # 使用imageio创建视频
+        # Use imageio to create video
         writer_first = imageio.get_writer(video_path_first, fps=fps)
         
-        # 遍历前100帧并写入视频
+        # Iterate through first 100 frames and write to video
         for image_data in images[:100]:
             frame = np.array(image_data)
-            # # OpenCV使用BGR格式，如果输入是RGB需要转换
-            # if frame.shape[-1] == 3:  # 确认是彩色图像
+            # # OpenCV uses BGR format, if input is RGB need to convert
+            # if frame.shape[-1] == 3:  # Confirm it's a color image
             #     frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
             writer_first.append_data(frame)
         
-        # 关闭writer
+        # Close writer
         writer_first.close()
 
-        # 仅当图像数量大于100时生成后100帧视频
+        # Only generate last 100 frames video when image count is greater than 100
         if len(images) > 100:
             writer_last = imageio.get_writer(video_path_last, fps=fps)
             for image_data in images[-100:]:

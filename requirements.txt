@@ -11,3 +11,6 @@ sentencepiece
 protobuf
 modelscope
 ftfy
+peft
+lightning
+pandas

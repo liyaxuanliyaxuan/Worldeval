@@ -32,16 +32,16 @@ def load_act_embed(file_path, start_index, end_index, action_encoded_path=None):
     return action_data
 
 def process_chunk(meta_chunk, lora_path, output_subdir, action, action_encoded_path, action_alpha, action_dim, device_id, action_length):
-    # 设置当前GPU设备
+    # Set current GPU device
     torch.cuda.set_device(device_id)
     
-    # 初始化模型管理器
+    # Initialize model manager
     model_manager = ModelManager(
         device="cuda",
         custom_params={"action_alpha": action_alpha, "action_dim": action_dim} if action else None
     )
     
-    # 加载基础模型
+    # Load base models
     model_manager.load_models(
         ["Wan2.1-I2V-14B-480P/models_clip_open-clip-xlm-roberta-large-vit-huge-14.pth"],
         torch_dtype=torch.float32,
@@ -63,14 +63,14 @@ def process_chunk(meta_chunk, lora_path, output_subdir, action, action_encoded_p
         torch_dtype=torch.bfloat16,
     )
 
-    # 加载LoRA
+    # Load LoRA
     if lora_path:
         model_manager.load_lora(lora_path, lora_alpha=1.0)
         output_subdir = output_subdir or "lora"
     else:
         output_subdir = output_subdir or "original"
 
-    # 初始化管道
+    # Initialize pipeline
     if action:
         pipe = WanVideoPipelineActEmbed.from_model_manager(
             model_manager, 
@@ -86,7 +86,7 @@ def process_chunk(meta_chunk, lora_path, output_subdir, action, action_encoded_p
 
     pipe.enable_vram_management(num_persistent_param_in_dit=6*10**9)
 
-    # 处理当前chunk中的每个条目
+    # Process each entry in the current chunk
     for entry in meta_chunk:
         try:
             start_frame_path = entry['image_path']
@@ -102,7 +102,7 @@ def process_chunk(meta_chunk, lora_path, output_subdir, action, action_encoded_p
                     file_path, start_index, start_index + action_length - 1, action_encoded_path
                 ).to("cuda")
 
-            # 视频生成
+            # Video generation
             if action:
                 video = pipe(
                     prompt=prompt,
@@ -120,7 +120,7 @@ def process_chunk(meta_chunk, lora_path, output_subdir, action, action_encoded_p
                     num_inference_steps=50, seed=0, tiled=True
                 )
 
-            # 保存结果
+            # Save results
             output_dir = os.path.join(os.path.dirname(entry['image_path']), output_subdir)
             os.makedirs(output_dir, exist_ok=True)
             output_path = os.path.join(
@@ -129,7 +129,7 @@ def process_chunk(meta_chunk, lora_path, output_subdir, action, action_encoded_p
             )
             save_video(video, output_path, fps=15, quality=5)
             
-            # 显存清理
+            # Clear VRAM
             torch.cuda.empty_cache()
             
         except Exception as e:
@@ -147,19 +147,19 @@ if __name__ == "__main__":
     parser.add_argument('--action_length', type=int, default=81, help='Length of the action sequence')
     args = parser.parse_args()
 
-    # 读取元数据
+    # Read metadata
     with open(args.meta_path, 'r') as f:
         meta_data = json.load(f)
 
-    # 获取可用GPU数量
+    # Get number of available GPUs
     num_gpus = torch.cuda.device_count()
     print(f"Available GPUs: {num_gpus}")
 
-    # 将数据分块
+    # Split data into chunks
     chunk_size = len(meta_data) // num_gpus + 1
     chunks = [meta_data[i::num_gpus] for i in range(num_gpus)]
 
-    # 创建并启动进程
+    # Create and start processes
     processes = []
     for gpu_id in range(num_gpus):
         chunk = chunks[gpu_id]
@@ -176,14 +176,13 @@ if __name__ == "__main__":
                 args.action_encoded_path,
                 args.action_alpha,
                 args.action_dim,
-                gpu_id,  # 当前进程使用的GPU ID
+                gpu_id,  
                 args.action_length
             )
         )
         processes.append(p)
         p.start()
 
-    # 等待所有进程完成
     for p in processes:
         p.join()
 
