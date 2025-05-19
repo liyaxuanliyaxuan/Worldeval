@@ -27,6 +27,7 @@ Our robot trajectory data format is the same as [act](https://github.com/MarkFzp
 root
   |-action (100,14)
   |-language_raw (1,)
+  |-substep_reasonings(100,)
   |-observations
       |-images # multi-view
           |-cam_left_wrist (100,480,640,3)
@@ -91,6 +92,10 @@ file_path,file_name,text
 ```
 
 ### Step 2: Data process
+
+```bash
+cd wanvideo
+```
 
 run `scripts/data_process.sh`
 
@@ -165,6 +170,10 @@ Use `utils/sample_frames_from_dir_for_test` to extract sample frames from the HD
 
 ### Step3: Run inference script
 
+```bash
+cd wanvideo
+```
+
 Run `scripts/inference.bash`
 
 ```bash
@@ -180,8 +189,17 @@ CUDA_VISIBLE_DEVICES="0,1,2,3,4,5,6,7" python infer.py \
 
 ## Acknowledgement
 We build our project based on:
-- [WAN2.1](https://github.com/Wan-Video/Wan2.1): a comprehensive and open suite of video foundation models that pushes the boundaries of video generation
-- [DiffSynth Studio](https://github.com/modelscope/DiffSynth-Studio): an open-source project aimed at exploring innovations in AIGC technology
+- [WAN2.1](https://github.com/Wan-Video/Wan2.1): a comprehensive and open suite of video foundation models that pushes the boundaries of video generation.
+- [DiffSynth Studio](https://github.com/modelscope/DiffSynth-Studio): an open-source project aimed at exploring innovations in AIGC technology, licensed under the Apache License 2.0.
+Significant modifications have been made by worldeval, including:
+  - Process robot data
+  - Train with latent action
+  - Inference with latent action
+
+This project contains code licensed under:
+- Apache License 2.0 (from the original project)
+- MIT License (for modifications made by worldeval)
+
 
 <!-- ## Citation
 
