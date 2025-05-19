@@ -3,10 +3,17 @@
 WorldEval: World Model as Real-World Robot Policies Evaluator</h1>
 
 
+
 * **World Model as Real-World Robot Policies Evaluator** <br>
   [![arXiv](https://img.shields.io/badge/Arxiv-2402.03766-b31b1b.svg?logo=arXiv)](https://arxiv.org/abs/)
   
+<p align="center">
+  <img src="assets/overview.png" width="400"/> &nbsp;
+</p>
 
+<p align="center">
+<img src="assets/pipeline.png" width="400"/>
+</p>
 
 ## 📰 News
 * **`May. 19th, 2025`**: Our code is released!
@@ -116,9 +123,7 @@ data/example_dataset/
 
 Step 4: Train
 
-LoRA training:
-
-run  `scripts/train.bash`
+Run  `scripts/train.bash`: 
 
  ```shell
 CUDA_VISIBLE_DEVICES="0,1,2,3,4,5,6,7" \
