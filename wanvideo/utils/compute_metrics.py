@@ -96,7 +96,6 @@ def main():
             real_images.append(hdf5_fid)
             gen_images.append(video_fid)
             
-            # 记录帧结果
             # frame_results.append({
             #     'frame_index': i,
             #     'lpips': lpips_val,

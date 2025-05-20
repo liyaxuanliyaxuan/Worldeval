@@ -2,10 +2,8 @@ import os
 import json
 import argparse
 import multiprocessing
-os.environ["TOKENIZERS_PARALLELISM"] = "false"
 import torch
-from diffsynth import ModelManager, WanVideoPipeline, WanVideoPipelineActEmbed, save_video, VideoData
-from PIL import Image
+from diffsynth import ModelManager, WanVideoPipeline, WanVideoPipelineActEmbed, save_video
 import h5py
 import numpy as np
 
@@ -24,9 +22,9 @@ def load_act_embed(file_path, start_index, end_index, action_encoded_path=None):
             if action_data.ndim == 3 and action_data.shape[1] == 1:
                 action_data = action_data.squeeze(1)
 
-    # if action_data.shape[0] < 81:
-    #     padding = ((0, 81 - action_data.shape[0]), (0, 0))
-    #     action_data = np.pad(action_data, padding, mode='constant')
+    if action_data.shape[0] < 81:
+        padding = ((0, 81 - action_data.shape[0]), (0, 0))
+        action_data = np.pad(action_data, padding, mode='constant')
     
     action_data = torch.tensor(action_data, dtype=torch.float32)
     return action_data

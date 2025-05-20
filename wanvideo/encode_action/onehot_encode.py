@@ -87,7 +87,7 @@ def process_actions(json_path, output_path, action_bins=16):
     print(f"Processed {len(valid_paths)} files.")
 
 
-# 使用示例
+# example usage
 process_actions(
     json_path="",
     output_path="",

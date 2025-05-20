@@ -197,7 +197,7 @@ Significant modifications have been made by worldeval, including:
 
 This project contains code licensed under:
 - Apache License 2.0 (from the original project)
-- MIT License (for modifications made by worldeval)
+- MIT License (for modifications made by Yaxuan Li)
 
 
 <!-- ## Citation

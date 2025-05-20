@@ -103,9 +103,8 @@ class TextVideoDataset(torch.utils.data.Dataset):
             first_frame = None  # To store first frames if is_i2v is True          
             start_frame_id = torch.randint(0, total_frames - (self.num_frames - 1) * self.frame_interval, (1,)).item()
             end_frame_id = start_frame_id + self.num_frames * self.frame_interval
-            # print("before load_frames_from_hdf5")
+
             frames = self.load_frames_from_hdf5(data, start_frame_id, end_frame_id, is_compressed=is_compressed)
-            # print("after load_frames_from_hdf5")
             text = self.load_text_from_hdf5(file_path, start_frame_id, end_frame_id)
             actions = self.load_act_embed(file_path, start_frame_id, end_frame_id)
             print("shape of actions:", actions.shape)
@@ -197,7 +196,7 @@ class TextVideoDataset(torch.utils.data.Dataset):
 
 
     def __getitem__(self, data_id):
-        actual_data_id = data_id // self.samples_per_file  # Use the variable here
+        actual_data_id = data_id // self.samples_per_file  
         text = self.text[actual_data_id]
         path = self.path[actual_data_id]
         to_path = path
@@ -277,14 +276,8 @@ class TensorDataset(torch.utils.data.Dataset):
         data_id = (data_id + index) % len(self.path)  # For fixed seed.
         path = self.path[data_id]
         
-        # Print the path
-        # print(f"Loading data from path: {path}")
-        
         data = torch.load(path, weights_only=True, map_location="cpu")
-        
-        # Print the fields in the loaded data
-        # print(f"Fields in data: {list(data.keys())}")
-        
+           
         return data
     
 
@@ -333,7 +326,6 @@ class LightningModelForTrain(pl.LightningModule):
                     layer.weight.requires_grad = True
                     if layer.bias is not None:
                         layer.bias.requires_grad = True
-            # Make action_alpha trainable
             self.pipe.denoising_model().action_alpha.requires_grad = True
             trainable_params = [name for name, param in self.pipe.denoising_model().named_parameters() if param.requires_grad]
             # print("Trainable parameters:", trainable_params)
@@ -368,7 +360,7 @@ class LightningModelForTrain(pl.LightningModule):
 
         for name, param in model.named_parameters():
             if "action_proj" in name and ("weight" in name or "bias" in name):
-                param.requires_grad = True  # 确保不被冻结
+                param.requires_grad = True  
 
         for param in model.parameters():
             # Upcast LoRA parameters into fp32
