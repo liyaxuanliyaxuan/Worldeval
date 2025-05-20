@@ -11,13 +11,9 @@ WorldEval: World Model as Real-World Robot Policies Evaluator</h1>
   <img src="assets/overview.png" width="500"/> &nbsp;
 </p>
 
-<p align="center">
-<img src="assets/pipeline.png" width="500"/>
-</p>
-
 ## 📰 News
 * **`May. 19th, 2025`**: Our code is released!
-* **`May. 19th, 2025`**: **Worldeval** is out! **Paper** can be found [here](https://arxiv.org/abs/2409.12514). The **project web** can be found [here](https://worldeval.github.io/).
+* **`May. 19th, 2025`**: **Worldeval** is out! **Paper** can be found [here](https://arxiv.org/). The **project web** can be found [here](https://worldeval.github.io/).
 
 
 ## Data Preparation
