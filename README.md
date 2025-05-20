@@ -56,7 +56,7 @@ Wan-Video is a collection of video synthesis models open-sourced by Alibaba.
 please install Worldeval from **source code**.
 
 ```shell
-git clone https://github.com/worldeval/Worldeval.git
+git clone https://github.com/liyaxuanliyaxuan/Worldeval.git
 cd Worldeval
 pip install -e .
 ```

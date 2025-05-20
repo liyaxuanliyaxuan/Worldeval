@@ -8,16 +8,16 @@ import torch
 from torch.utils.data import Dataset, DataLoader
 from tqdm import tqdm
 
-from vqvae.vqvae import VqVae  # 假设你的VqVae类在此路径
+from vqvae.vqvae import VqVae  # Assume your VqVae class is in this path
 
 
 class H5InferenceDataset(Dataset):
     def __init__(self, file_path, seq_length=16, action_dim=14):
         """
         Args:
-            file_path (str): hdf5文件路径
-            seq_length (int): 模型需要的序列长度
-            action_dim (int): 动作维度
+            file_path (str): hdf5 file path
+            seq_length (int): sequence length required by the model
+            action_dim (int): action dimension
         """
         self.file_path = file_path
         self.seq_length = seq_length
@@ -27,15 +27,15 @@ class H5InferenceDataset(Dataset):
             self.actions = np.array(f['action'][:], dtype=np.float32)
             self.original_length = len(self.actions)
         
-        # 使用滑动窗口和填充来分割序列
+        # Use sliding window and padding to split sequences
         self.sequences = []
         num_sequences = self.actions.shape[0]
         for i in range(num_sequences):
-            # 计算序列的起始和结束索引
+            # Calculate start and end indices of the sequence
             end = i + 1
             start = max(0, end - self.seq_length)
             
-            # 提取序列并进行填充
+            # Extract sequence and pad if necessary
             seq = self.actions[start:end]
             if len(seq) < self.seq_length:
                 padding = np.zeros((self.seq_length - len(seq), self.actions.shape[1]), dtype=np.float32)
@@ -52,14 +52,14 @@ class H5InferenceDataset(Dataset):
         return torch.from_numpy(self.sequences[idx].astype(np.float32))
 
     def get_original_indices(self):
-        """获取有效数据索引"""
+        """Get valid data indices"""
         return slice(0, self.original_length)
 
 def inference(args):
-    # 设备配置
+    # Device configuration
     device = torch.device(args.device if torch.cuda.is_available() else "cpu")
     
-    # 加载模型
+    # Load model
     vqvae = VqVae(
         input_dim_h=args.seq_length,
         input_dim_w=args.action_dim,
@@ -72,10 +72,10 @@ def inference(args):
     )
     vqvae.load_state_dict(torch.load(args.model_path, map_location=device))
     
-    # 处理单个文件
+    # Process a single file
     def process_file(input_path):
         
-        # 初始化数据集
+        # Initialize dataset
         dataset = H5InferenceDataset(
             input_path,
             seq_length=args.seq_length,
@@ -97,7 +97,7 @@ def inference(args):
             for batch in tqdm(dataloader, desc=f"Processing {os.path.basename(input_path)}"):
                 batch = batch.to(device)
                 
-                # 获取潜在变量 [batch_size, seq_length, latent_dim]
+                # Get latents [batch_size, seq_length, latent_dim]
                 latents, _ = vqvae.get_code(batch)
                 print(f"latents shape: {latents.shape}")
                 file_latents.append(latents.cpu().numpy())
@@ -107,7 +107,7 @@ def inference(args):
         # print(f"latents shape: {latents.shape}")
         latents = latents.reshape(-1, args.latent_dim)  # [total_steps, latent_dim]
         # print(f"latents shape after reshape: {latents.shape}")
-        valid_latents = latents[:dataset.original_length]  # 去除填充部分
+        valid_latents = latents[:dataset.original_length]  # Remove padding part
         valid_latents = torch.from_numpy(valid_latents)  # Convert to tensor
         print(f"valid_latents shape: {valid_latents.shape}")
         # valid_latents = valid_latents.squeeze(1)  # Remove the singleton dimension
@@ -116,14 +116,14 @@ def inference(args):
 
     all_latents = []  # Initialize all_latents outside the process_file function
 
-    # 处理所有文件
+    # Process all files
     with open(args.file_list_path, 'r') as f:
         if args.file_list_path.endswith('.json'):
-            # 如果是JSON文件，读取每个item的file_path字段
+            # If JSON file, read the file_path field of each item
             data = json.load(f)
             input_files = list(set(item['file_path'] for item in data))
         else:
-            # 如果是文本文件，读取每行
+            # If text file, read each line
             input_files = [line.strip() for line in f if line.strip().endswith('.hdf5')]
     
     for input_file in input_files:
@@ -140,38 +140,38 @@ def inference(args):
 def parse_inference_args():
     parser = argparse.ArgumentParser(description="VQ-VAE Inference")
     
-    # 必需参数
+    # Required arguments
     parser.add_argument("--model_path", type=str, required=True,
-                       help="训练好的模型路径")
+                       help="Path to the trained model")
     parser.add_argument("--file_list_path", type=str, required=True,
-                       help="包含待处理hdf5文件路径列表的文本文件")
+                       help="Text file containing the list of hdf5 file paths to process")
     
-    # 模型参数 (必须与训练时一致)
+    # Model parameters (must be consistent with training)
     parser.add_argument("--seq_length", type=int, default=16,
-                       help="必须与训练时使用的序列长度相同")
+                       help="Must be the same as the sequence length used during training")
     parser.add_argument("--action_dim", type=int, default=14,
-                       help="必须与训练时动作维度相同")
+                       help="Must be the same as the action dimension used during training")
     parser.add_argument("--latent_dim", type=int, default=512,
-                       help="必须与训练时潜在维度相同")
+                       help="Must be the same as the latent dimension used during training")
     parser.add_argument("--n_embed", type=int, default=32,
-                       help="必须与训练时码本大小相同")
+                       help="Must be the same as the codebook size used during training")
     parser.add_argument("--n_groups", type=int, default=4,
-                       help="必须与训练时残差组数相同")
+                       help="Must be the same as the number of residual groups used during training")
     parser.add_argument("--act_scale", type=float, default=5.0,
-                       help="必须与训练时缩放因子相同")
+                       help="Must be the same as the scaling factor used during training")
     
-    # 推理参数
+    # Inference parameters
     parser.add_argument("--batch_size", type=int, default=32,
-                       help="推理批量大小")
+                       help="Inference batch size")
     parser.add_argument("--device", type=str, default="cuda",
                        choices=["cuda", "cpu"],
-                       help="推理设备")
+                       help="Inference device")
     parser.add_argument("--num_workers", type=int, default=4,
-                       help="数据加载线程数")
+                       help="Number of data loading workers")
     
     # Add a new argument for the save path
     parser.add_argument("--save_path", type=str, default="actions_vqvae.pt",
-                       help="保存潜在变量的路径")
+                       help="Path to save the latent variables")
 
     return parser.parse_args()
 

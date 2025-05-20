@@ -8,37 +8,37 @@ from torch import optim
 import torch.nn as nn
 from vqvae.vqvae import VqVae
 
-# 新增自定义数据集类
+# Custom dataset class
 class H5ActionDataset(Dataset):
     def __init__(self, file_list_path, seq_length=10, action_dim=14):
         """
         Args:
-            file_list_path (str): 包含h5文件路径的文本文件路径
-            seq_length (int): 动作序列的时间步长 (对应input_dim_h)
-            action_dim (int): 动作维度 (对应input_dim_w)
+            file_list_path (str): Path to the text file containing h5 file paths
+            seq_length (int): Time steps of the action sequence (corresponds to input_dim_h)
+            action_dim (int): Dimension of the action (corresponds to input_dim_w)
         """
-        # 从file_path.txt文件中读取所有h5文件的路径
+        # Read all h5 file paths from file_path.txt
         with open(file_list_path, 'r') as f:
             self.file_paths = [line.strip() for line in f if line.strip().endswith('.hdf5')]
         self.sequences = []
         
-        # 预加载所有有效数据
+        # Preload all valid data
         for path in self.file_paths:
             with h5py.File(path, 'r') as f:
                 if 'action' not in f:
                     continue
                 
-                # 获取动作数据 [N, D]
+                # Get action data [N, D]
                 actions = np.array(f['action'][:], dtype=np.float32)
                 
-                # 使用滑动窗口和填充来分割序列
+                # Use sliding window and padding to split sequences
                 num_sequences = actions.shape[0]
                 for i in range(num_sequences):
-                    # 计算序列的起始和结束索引
+                    # Calculate start and end indices of the sequence
                     end = i + 1
                     start = max(0, end - seq_length)
                     
-                    # 提取序列并进行填充
+                    # Extract sequence and pad if necessary
                     seq = actions[start:end]
                     if len(seq) < seq_length:
                         padding = np.zeros((seq_length - len(seq), actions.shape[1]), dtype=np.float32)
@@ -50,13 +50,13 @@ class H5ActionDataset(Dataset):
         return len(self.sequences)
 
     def __getitem__(self, idx):
-        # 返回形状为 [seq_length, action_dim]
+        # Return shape [seq_length, action_dim]
         return torch.from_numpy(self.sequences[idx])
 
 def train(args):
     device = torch.device(args.device if torch.cuda.is_available() else "cpu")
     
-    # 初始化数据集和数据加载器
+    # Initialize dataset and dataloader
     dataset = H5ActionDataset(
         args.file_list_path,
         seq_length=args.seq_length,
@@ -71,7 +71,7 @@ def train(args):
         pin_memory=True
     )
     
-    # 初始化模型
+    # Initialize model
     vqvae = VqVae(
         input_dim_h=args.seq_length,
         input_dim_w=args.action_dim,
@@ -83,7 +83,7 @@ def train(args):
         eval=False
     )
     
-    # 训练循环
+    # Training loop
     for epoch in range(args.epochs):
         total_recon_loss = 0.0
         total_vq_loss = 0.0
@@ -102,13 +102,13 @@ def train(args):
                     f"Recon Loss: {recon_loss:.4f} | VQ Loss: {vq_loss.item():.4f}"
                 )
         
-        # 保存模型
+        # Save model
         if (epoch + 1) % args.save_interval == 0:
             save_path = os.path.join(args.save_dir, f"vqvae_epoch_{epoch+1}.pth")
             torch.save(vqvae.state_dict(), save_path)
             print(f"Model saved at {save_path}")
         
-        # 打印epoch统计信息
+        # Print epoch statistics
         avg_recon = total_recon_loss / len(dataloader)
         avg_vq = total_vq_loss / len(dataloader)
         print(f"Epoch {epoch} Summary | Avg Recon: {avg_recon:.4f} | Avg VQ: {avg_vq:.4f}")

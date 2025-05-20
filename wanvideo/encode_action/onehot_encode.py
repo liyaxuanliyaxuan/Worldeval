@@ -11,22 +11,22 @@ class ActionDiscretizer:
         self.action_bins = action_bins
         
     def discretize_and_onehot_actions(self, actions):
-        # 计算每个动作的离散化索引
+        # Calculate the discretized index for each action
         bin_size = (self.action_max - self.action_min) / self.action_bins
         discretized = torch.floor((actions - self.action_min) / bin_size).long()
         discretized = torch.clamp(discretized, 0, self.action_bins-1)
         
-        # 转换为one-hot编码
+        # Convert to one-hot encoding
         actions_onehot = F.one_hot(discretized, num_classes=self.action_bins)
         return actions_onehot.view(*actions.shape[:2], -1)  
 
 def process_actions(json_path, output_path, action_bins=16):
-    # 读取文件列表
+    # Read file list
     df = pd.read_json(json_path)
     # df = pd.read_csv(json_path)
     file_paths = df['file_path'].tolist()
     
-    # ===== 第一阶段：计算全局极值 =====
+    # ===== Phase 1: Calculate global min/max =====
     # all_actions = []  # Initialize a list to store all actions
     
     # for path in file_paths:
@@ -51,7 +51,7 @@ def process_actions(json_path, output_path, action_bins=16):
     
     # print(f"final_min: {final_min}, final_max: {final_max}")
     
-    # ===== 第二阶段：处理所有文件 =====
+    # ===== Phase 2: Process all files =====
     discretizer = ActionDiscretizer(
         action_min=-1.671177864074707,
         action_max=8.268219947814941,
@@ -68,17 +68,17 @@ def process_actions(json_path, output_path, action_bins=16):
             
             actions = torch.tensor(f['action'][:], dtype=torch.float32)
             
-            # 离散化处理
+            # Discretization processing
             decoded = discretizer.discretize_and_onehot_actions(actions)
             
-            all_actions.append(decoded)  # 不用堆叠
+            all_actions.append(decoded)  # No need to stack
             valid_paths.append(path)
     
     print(f"all_actions shape: {all_actions[0].shape}")
-    # 存储为字典或列表
+    # Store as dict or list
     result = {
         'file_path': valid_paths,
-        'encoded_action': all_actions,  # 直接存储为列表
+        'encoded_action': all_actions,  # Store directly as list
         'action_min': -1.671177864074707,
         'action_max': 8.268219947814941
     }
