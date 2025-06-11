@@ -13,5 +13,4 @@ from .hunyuan_video import HunyuanVideoPipeline
 from .step_video import StepVideoPipeline
 from .wan_video import WanVideoPipeline
 from .wan_video_act_embed import WanVideoPipelineActEmbed
-from .wan_video_act_embed_onehot import WanVideoPipelineActEmbedOnehot
 KolorsImagePipeline = SDXLImagePipeline

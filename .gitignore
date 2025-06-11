@@ -1,0 +1,51 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+*.pyd
+*.pyo
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+
+# 环境/依赖
+.env
+.venv/
+venv/
+ENV/
+*.egg-info/
+*.egg
+
+# 数据和模型
+/data/
+/dataset/
+/datasets/
+*.txt
+*.h5
+*.hdf5
+*.pth
+*.pt
+*.ckpt
+*.npz
+*.npy
+*.joblib
+*.pkl
+*.pickle
+*.onnx
+*.tflite
+*.pb
+*.weights
+*.ckpt
+
+# 日志和输出
+logs/
+*.log
+output/
+outputs/
+results/
+
+# 其他常见
+.DS_Store
+.idea/
+.vscode/
+*.swp

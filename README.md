@@ -5,7 +5,7 @@ WorldEval: World Model as Real-World Robot Policies Evaluator</h1>
 
 
 * **World Model as Real-World Robot Policies Evaluator** <br>
-  [![arXiv](https://img.shields.io/badge/Arxiv-2402.03766-b31b1b.svg?logo=arXiv)](https://arxiv.org/abs/)
+  [![arXiv](https://img.shields.io/badge/Arxiv-2402.03766-b31b1b.svg?logo=arXiv)](https://www.arxiv.org/abs/2505.19017)
   
 <p align="center">
   <img src="assets/overview.png" width="500"/> &nbsp;
@@ -13,7 +13,7 @@ WorldEval: World Model as Real-World Robot Policies Evaluator</h1>
 
 ## 📰 News
 * **`May. 19th, 2025`**: Our code is released!
-* **`May. 19th, 2025`**: **Worldeval** is out! **Paper** can be found [here](https://arxiv.org/). The **project web** can be found [here](https://worldeval.github.io/).
+* **`May. 19th, 2025`**: **Worldeval** is out! **Paper** can be found [here](https://www.arxiv.org/pdf/2505.19017). The **project web** can be found [here](https://worldeval.github.io/).
 
 
 ## Data Preparation
@@ -200,15 +200,17 @@ This project contains code licensed under:
 - MIT License (for modifications made by Yaxuan Li)
 
 
-<!-- ## Citation
+## Citation
 
 If you find Worldeval useful for your research and applications, please cite using this BibTeX:
 ```bibtex
-@misc{
-    @inproceedings{wen2024tinyvla,
-    title={Tinyvla: Towards fast, data-efficient vision-language-action models for robotic manipulation},
-    author={Wen, Junjie and Zhu, Yichen and Li, Jinming and Zhu, Minjie and Wu, Kun and Xu, Zhiyuan and Liu, Ning and Cheng, Ran and Shen, Chaomin and Peng, Yaxin and others},
-    booktitle={IEEE Robotics and Automation Letters (RA-L)},
-    year={2025}
+@misc{li2025worldevalworldmodelrealworld,
+      title={WorldEval: World Model as Real-World Robot Policies Evaluator}, 
+      author={Yaxuan Li and Yichen Zhu and Junjie Wen and Chaomin Shen and Yi Xu},
+      year={2025},
+      eprint={2505.19017},
+      archivePrefix={arXiv},
+      primaryClass={cs.RO},
+      url={https://arxiv.org/abs/2505.19017}, 
 }
-``` -->
+```
